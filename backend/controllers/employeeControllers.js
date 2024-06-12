@@ -4,8 +4,8 @@ const connectDB = require("../config/db");
 const pool = connectDB();
 require("dotenv").config()
 
-// @desc 1. a. Authenticate Users
-// @route /api/employee/
+// @desc 1. a. Authenticate Users ✅
+// @route POST /api/employee/
 // @access Public
 
 const registerEmployee = async (req, res) => {
@@ -63,6 +63,42 @@ const registerEmployee = async (req, res) => {
     }
 }
 
+// @desc 1. b. Authentication - Login ✅
+// @route POST /api/employee/login
+// @access Public
+const loginEmployee = async (req, res) => {
+    // 1. Obtain User Data From req.body
+    const { email, password } = req.body;
+    // console.log(email);
+
+    // 2. Query Database to check if employee exists
+    let employee;
+    try {
+        const result = await pool.query(`SELECT * FROM employee WHERE emp_email='${email}'`);
+        // console.log(result); // Query Result 
+        employee = result.rows[0];
+        // console.log(employee);
+    } catch (err) {
+        console.log(err);
+    }
+
+    if (employee && (await bcyrptjs.compare(password, employee.emp_pass))) {
+        res.json({
+            _id: employee['emp_id'],
+            name: employee['emp_name'],
+            email: employee['emp_email'],
+            token: generateToken(employee['emp_id']),
+        });
+    } else {
+        res.status(400);
+        throw new Error("Invalid User Details!");
+    }
+
+    res.json({
+        message: "Hello from Login"
+    });
+}
+
 // Utilities:
 const generateToken = id => {
     return jwt.sign(
@@ -72,4 +108,4 @@ const generateToken = id => {
     );
 }
 
-module.exports = { registerEmployee }
+module.exports = { registerEmployee, loginEmployee }
