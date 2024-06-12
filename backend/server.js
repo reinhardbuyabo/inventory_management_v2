@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
 
 // API Endpoints
 app.use("/api/shoes", require("./routes/shoeRoutes"));
+app.use("/api/employee", require("./routes/employeeRoutes"));
 
 // Server
 app.listen(PORT, () => {
