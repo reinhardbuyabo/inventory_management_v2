@@ -1,6 +1,7 @@
 # IMS Backend
 
 - `await pool.query("SELECT * FROM Shoe")` has the following return value:
+
 ``bash
 Result {
   command: 'SELECT',
@@ -65,3 +66,8 @@ Result {
 ```
 
 - Take note of the rows.
+
+## Employee Routes
+- `app.use("/api/employee")`
+- `type nul > routes/employeeRoutes.js`
+- `type nul > controllers/employeeControllers.js`
