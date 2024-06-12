@@ -71,3 +71,6 @@ Result {
 - `app.use("/api/employee")`
 - `type nul > routes/employeeRoutes.js`
 - `type nul > controllers/employeeControllers.js`
+
+## Bearer Token
+- In `authMiddleware.js`, the following comes about upon logging decoded: `{ id: 12, iat: 1718221335, exp: 1720813335 }`

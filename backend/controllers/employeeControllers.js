@@ -83,7 +83,7 @@ const loginEmployee = async (req, res) => {
     }
 
     if (employee && (await bcyrptjs.compare(password, employee.emp_pass))) {
-        res.json({
+        res.status(200).json({
             _id: employee['emp_id'],
             name: employee['emp_name'],
             email: employee['emp_email'],
@@ -99,6 +99,17 @@ const loginEmployee = async (req, res) => {
     });
 }
 
+// @desc 2. Get Employee By Id (TEst Middleware Auth) ✅
+// @route GET /api/employee/me
+// @access Private
+const getMe = async (req, res) => {
+    res.json({
+        id: req.user['emp_id'],
+        name: req.user['emp_name'],
+        email: req.user['emp_email']
+    })
+}
+
 // Utilities:
 const generateToken = id => {
     return jwt.sign(
@@ -108,4 +119,4 @@ const generateToken = id => {
     );
 }
 
-module.exports = { registerEmployee, loginEmployee }
+module.exports = { registerEmployee, loginEmployee, getMe }
