@@ -1,3 +1,4 @@
+const { urlencoded } = require("body-parser")
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db")
@@ -10,6 +11,8 @@ dotenv.config();
 const PORT = process.env.PORT;
 
 // MiddleWare
+app.use(express.json());
+app.use(urlencoded({ extended: false }));
 
 // DB Config
 const pool = connectDB();
@@ -24,16 +27,8 @@ app.get("/", (req, res) => {
     })
 })
 
-// GET 2
-app.get('/shoes', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM Shoe');
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-    }
-});
+// API Endpoints
+app.use("/api/shoes", require("./routes/shoeRoutes"));
 
 // Server
 app.listen(PORT, () => {
