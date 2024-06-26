@@ -237,4 +237,27 @@ fs.readFile(tmp_path, function(err, data)
     "path": "uploads\\ba5a8b81dc1d48ced933fc3d9811364c",
     "size": 6349
 }
+
+{
+    "fieldname": "file",
+    "originalname": "sixhunfourhun.png",
+    "encoding": "7bit",
+    "mimetype": "image/png",
+    "destination": "./uploads",
+    "filename": "sixhunfourhun.png",
+    "path": "uploads\\sixhunfourhun.png",
+    "size": 11211
+}
 ```
+
+### File Upload:
+- Route: `POST /api/shoes`
+- When adding stock, we want to add the following attributes about a shoe: 
+1. The Image of the Shoe.
+2. The Shoe Name
+3. The Shoe Color
+
+- We also expect that the Manager would want to initialize a starting value for the Shoes that have arrived. If the Value is not set, then we can default it to 0.
+- However the num_of_shoes attribute is stored in a different table, reason being NORMALIZATION.
+
+- My INSERT query completes before my select query
