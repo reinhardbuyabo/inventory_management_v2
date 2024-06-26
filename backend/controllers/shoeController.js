@@ -35,45 +35,122 @@ const addStock = async (req, res) => {
         // Image URL: 
 
         // Existing Shoe Logic: (SELECT) ✅
-        const existing_shoe = await pool.query(`SELECT * FROM shoe WHERE shoe_name='${shoe_name}' AND shoe_color='${shoe_color}'`);
-        console.log(existing_shoe.rows);
-        if (existing_shoe.rowCount > 0) {
-            res.status(400).json({
-                message: "Cannot Add Shoe: Shoe Already Exists",
-            });
+        pool.query(
+            `SELECT * FROM shoe WHERE shoe_name='${shoe_name}' AND shoe_color='${shoe_color}'`
+        ).then(existing_shoe => {
+            console.log(existing_shoe);
+
+            if (existing_shoe.rowCount > 0) {
+                res.status(400).json({
+                    message: "Cannot Add Shoe: Shoe Already Exists",
+                });
+            } else {
+                // Image String: ✅
+                const img_url = `${req.file.destination}/${req.file.filename}`
+                // console.log(img_url);
+
+                // (INSERT) INTO shoe TABLE: ✅
+                pool.query(
+                    `INSERT INTO shoe(shoe_name, shoe_color, shoe_img) VALUES($1, $2, $3)`,
+                    [shoe_name, shoe_color, img_url]
+                ).then(response => {
+                    console.log(response);
+
+                    // Fetch Newly Inserted Shoe: (SELECT) ✅
+                    pool.query(`SELECT * FROM shoe WHERE shoe_name='${shoe_name}' AND shoe_color='${shoe_color}'`)
+                        .then(insert_result => {
+                            console.log(insert_result);
+                            if (insert_result.rowCount > 0) {
+                                inserted_row = insert_result.rows[0]; // Assuming it actually exists;
+                                console.log(inserted_row);
+
+                                const { shoe_id } = inserted_row;
+
+                                if (!stall_id) {
+                                    res.status(400).json({
+                                        message: "Please Contact Your Admin: Invalid Stall!",
+                                    });
+                                }
+                                // console.log(stall_id);
+
+                                let numOfShoes = num_of_shoes != undefined ? num_of_shoes : 0;
+                                // console.log(numOfShoes);
+
+                                pool.query(
+                                    `INSERT INTO shoe_to_stall(shoe_to_stall_id, shoe_id, stall_id, num_of_shoes, created_at, updated_at) VALUES ('${v4()}', $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+                                    [shoe_id, stall_id, numOfShoes]
+                                ).then(response => {
+                                    console.log("New Shoe Added!", response);
+
+                                    res.status(200).json({
+                                        message: "Shoe Added Succesfully! ✅"
+                                    })
+                                }).catch(err => {
+                                    console.log(err);
+
+                                    res.status(400).json({
+                                        message: err.message, // err: syntax error at end of input
+                                    })
+                                });
+                            } else {
+                                res.status(400).json({
+                                    message: "Bad Query Detected",
+                                })
+                            }
+                        }).catch(err => {
+                            console.log(err);
+                        })
+                }).catch(err => {
+                    console.log(err);
+                    res.status(400).json({
+                        message: `INSERT TO shoe error: ${err.message}`
+                    });
+                });
+            }
         }
 
-        // Image String: ✅
-        const img_url = `${req.file.destination}/${req.file.filename}`
-        // console.log(img_url);
-
-        // (INSERT) INTO shoe TABLE: ✅
-        let inserted_row;
-        await pool.query(
-            `INSERT INTO shoe(shoe_name, shoe_color, shoe_img) VALUES($1, $2, $3)`,
-            [shoe_name, shoe_color, img_url]
-        ).then(response => {
-            console.log(response);
-
-        }).catch(err => {
+        ).catch(err => {
             console.log(err);
-            res.status(400).json({
-                message: `INSERT TO shoe error: ${err.message}`
-            });
         });
 
-        // Fetch Newly Inserted Shoe: (SELECT)
-        const insert_result = await pool.query(`SELECT * FROM shoe WHERE shoe_name='${shoe_name}' AND shoe_color='${shoe_color}'`);
-        console.log(insert_result);
+        // console.log(existing_shoe.rows);
+        // if (existing_shoe.rowCount > 0) {
+        //     res.status(400).json({
+        //         message: "Cannot Add Shoe: Shoe Already Exists",
+        //     });
+        // }
 
-        if (insert_result.rows > 0) {
-            inserted_row = insert_result.rows[0]; // Assuming it actually exists;
-            console.log(inserted_row);
-        } else {
-            res.status(400).json({
-                message: "Bad Query Detected",
-            })
-        }
+        // // Image String: ✅
+        // const img_url = `${req.file.destination}/${req.file.filename}`
+        // // console.log(img_url);
+
+        // // (INSERT) INTO shoe TABLE: ✅
+        // let inserted_row;
+        // await pool.query(
+        //     `INSERT INTO shoe(shoe_name, shoe_color, shoe_img) VALUES($1, $2, $3)`,
+        //     [shoe_name, shoe_color, img_url]
+        // ).then(response => {
+        //     console.log(response);
+
+        // }).catch(err => {
+        //     console.log(err);
+        //     res.status(400).json({
+        //         message: `INSERT TO shoe error: ${err.message}`
+        //     });
+        // });
+
+        // // Fetch Newly Inserted Shoe: (SELECT)
+        // const insert_result = await pool.query(`SELECT * FROM shoe WHERE shoe_name='${shoe_name}' AND shoe_color='${shoe_color}'`);
+        // console.log(insert_result);
+
+        // if (insert_result.rows > 0) {
+        //     inserted_row = insert_result.rows[0]; // Assuming it actually exists;
+        //     console.log(inserted_row);
+        // } else {
+        //     res.status(400).json({
+        //         message: "Bad Query Detected",
+        //     })
+        // }
 
         // console.log("Inserted Shoe minus Number of Shoes: ");
         // console.log(inserted_row);
