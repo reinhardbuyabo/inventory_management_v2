@@ -260,4 +260,4 @@ fs.readFile(tmp_path, function(err, data)
 - We also expect that the Manager would want to initialize a starting value for the Shoes that have arrived. If the Value is not set, then we can default it to 0.
 - However the num_of_shoes attribute is stored in a different table, reason being NORMALIZATION.
 
-- My INSERT query completes before my select query
+- My INSERT query completes before my select query.

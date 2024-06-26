@@ -20,7 +20,7 @@ const getShoes = async (req, res) => {
     }
 }
 
-// @desc 2. Add Stock
+// @desc 2. Add Stock ✅
 // @route POST /api/shoes
 // @access Private - Manager
 const addStock = async (req, res) => {
