@@ -17,7 +17,7 @@ const ShoeCard = ({ item, handleProductClick }) => {
             {/* <Image source={item.shoe_img ? { uri: `${item.shoe_img}` } : require('../assets/placeholder_img.png')} style={styles.coverImage} /> */}
             <View style={styles.contentContainer}>
                 <Text style={styles.title}>{item.shoe_name} - {item.shoe_color}</Text>
-                <Text style={styles.quantity}>In Stock: 25</Text>
+                <Text style={styles.quantity}>In Stock: {item.num_of_shoes}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
         borderColor: 'coral',
         // backgroundColor: 'green',
         borderRadius: '10',
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowColor: 'coral',
         shadowOffset: {
             width: 2,

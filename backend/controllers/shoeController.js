@@ -2,6 +2,8 @@ const express = require("express");
 const connectDB = require("../config/db");
 const pool = connectDB();
 const { v4 } = require("uuid");
+const cloudinary = require("../config/cloudinary_config");
+
 
 // @desc 1. Get All Shoes ✅
 // @route GET /api/shoes
@@ -10,7 +12,7 @@ const getShoes = async (req, res) => {
 
     try {
         // pool.query returns a promise
-        const result = await pool.query("SELECT * FROM shoe");
+        const result = await pool.query("SELECT * FROM shoe LEFT JOIN shoe_to_stall ON shoe.shoe_id=shoe_to_stall.shoe_id LEFT JOIN stall ON stall.stall_id=shoe_to_stall.stall_id");
         console.log(result);
         const shoes = result.rows;
         res.status(200).json(shoes);
@@ -27,7 +29,7 @@ const getShoeImage = async (req, res) => {
         const shoe_img_path_res = await pool.query("SELECT shoe_img FROM shoe WHERE shoe_id=$1", [id]);
         console.log(shoe_img_path_res);
         const shoe_img_path = shoe_img_path_res.rows[0];
-        shoe_img_path.spi
+
         res.status(200).json({
             shoe_img_path: shoe_img_path,
         });
@@ -54,7 +56,7 @@ const addStock = async (req, res) => {
         // Existing Shoe Logic: (SELECT) ✅
         pool.query(
             `SELECT * FROM shoe WHERE shoe_name='${shoe_name}' AND shoe_color='${shoe_color}'`
-        ).then(existing_shoe => {
+        ).then(async (existing_shoe) => {
             console.log(existing_shoe);
 
             if (existing_shoe.rowCount > 0) {
@@ -63,8 +65,16 @@ const addStock = async (req, res) => {
                 });
             } else {
                 // Image String: ✅
-                const img_url = `${req.file.destination}/${req.file.filename}`
-                // console.log(img_url);
+                // console.log(req.file);
+                const result = await cloudinary.uploader.upload(req.file.path, {
+                    public_id: `${v4()}_${shoe_name}_${shoe_color}`,
+                    width: 500,
+                    height: 500,
+                    crop: 'fill'
+                });
+
+                const img_url = result.url;
+                console.log(`After Cloudinary: ${img_url}`);
 
                 // (INSERT) INTO shoe TABLE: ✅
                 pool.query(

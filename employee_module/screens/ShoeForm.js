@@ -21,23 +21,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign, Zocial, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 
 import CustomButton from '../components/CustomButton';
-import { AuthContext } from '../context/AuthContext';
+import ImageUpload from '../components/ImageUpload';
 
-const ShoeForm = ({ navigation }) => {
-    const { register } = useContext(AuthContext);
-
-    const [name, setName] = useState(null);
-    const [email, setEmail] = useState(null);
-    const [password, setPassword] = useState(null);
-    const [confPassword, setConfPassword] = useState(null);
-
-    const onSubmit = (n, e, p, c) => {
-        if (p !== c) {
-            Alert.alert("Password Do Not Match");
-        } else {
-            register(n, e, p);
-        }
-    }
+const ShoeForm = ({ navigation, onSubmit }) => {
+    const [shoe_name, setShoeName] = useState(null);
+    const [shoe_color, setShoeColor] = useState(null);
+    const [num_of_shoes, setNumOfShoes] = useState(null);
+    const [shoe_img, setShoeImg] = useState(null);
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
@@ -66,8 +56,8 @@ const ShoeForm = ({ navigation }) => {
                             style={{ marginRight: 5 }}
                         />
                     }
-                    value={name}
-                    onChangeText={text => setName(text)}
+                    value={shoe_name}
+                    onChangeText={text => setShoeName(text)}
                 />
 
                 <InputField
@@ -80,9 +70,9 @@ const ShoeForm = ({ navigation }) => {
                             style={{ marginRight: 5 }}
                         />
                     }
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={text => setEmail(text)}
+                    keyboardType="default"
+                    value={shoe_color}
+                    onChangeText={text => setShoeColor(text)}
                 />
 
                 <InputField
@@ -96,12 +86,12 @@ const ShoeForm = ({ navigation }) => {
                     }
                     inputType="number"
                     keyboardType="number-pad"
-                    value={Number}
-                    onChangeText={text => setPassword(text)}
+                    value={num_of_shoes}
+                    onChangeText={text => setNumOfShoes(text)}
                 />
 
                 {/* Put Shoe Image Here */}
-                <InputField
+                {/* <InputField
                     label={'Shoe Image'}
                     icon={
                         <FontAwesome5
@@ -111,14 +101,14 @@ const ShoeForm = ({ navigation }) => {
                             style={{ marginRight: 5 }}
                         />
                     }
-                    inputType="password"
-                    value={confPassword}
-                    onChangeText={text => setConfPassword(text)}
-                />
+                    inputType="text"
+                    value={shoe_img}
+                    onChangeText={text => setShoeImg(text)}
+                /> */}
 
-                {/* Removed an entire view from here */}
+                <ImageUpload />
 
-                <CustomButton label={'Submit'} onPress={() => { onSubmit(name, email, password, confPassword) }} />
+                <CustomButton label={'Submit'} onPress={() => { onSubmit(shoe_name, shoe_color, num_of_shoes, shoe_img) }} />
 
             </ScrollView>
         </SafeAreaView>

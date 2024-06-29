@@ -225,3 +225,65 @@ return (
   </View>
 );
 ```
+
+### Images From Frontend
+- ImageUpload.js
+```js
+<View style={styles.container}>
+<View>
+<TouchableOpacity>
+    <Text>Upload Image</Text>
+</TouchableOpacity>
+    <Text>Skip</Text>
+</View>
+
+</View>
+
+return <ImageUpload>
+
+const openImageLibarary() => {
+    const response = await ImagePicker.reqeustMediaLibraryPermissionsAsync();
+
+    console.log(resons)
+}
+```
+
+```js
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React from 'react'
+
+const ImageUpload = () => {
+    const openImageLibrary = async () => {
+        const response = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        console.log(response);
+
+        if (response.status !== 'granted') {
+            alert("We Need Camera");
+        }
+
+        if (response.status === 'granted') {
+            const res = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+            });
+        }
+    }
+
+    return (
+        <View style={styles.container}>
+            <View>
+                <TouchableOpacity onPress={openImageLibrary}>
+                    <Text>Upload Image</Text>
+                </TouchableOpacity>
+                <Text>Skip</Text>
+            </View>
+
+        </View>
+    )
+}
+
+export default ImageUpload
+
+const styles = StyleSheet.create({})
+```

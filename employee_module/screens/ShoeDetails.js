@@ -21,7 +21,6 @@ const ShoeDetails = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const shoe = route.params.item;
-    const images = ['image1.png', 'image2.png'];
 
     console.log(shoe.shoe_img);
     return (
@@ -31,7 +30,7 @@ const ShoeDetails = () => {
             </View>
 
             <View style={styles.imageContainer}>
-                <Image source={shoe.shoe_img ? { uri: `${shoe.shoe_img}` } : require('../assets/placeholder_img.png')} style={styles.coverImage} />
+                <Image source={shoe.shoe_img ? { uri: 'https://placehold.co/600x600/jpg' } : require('../assets/placeholder_img.png')} style={styles.coverImage} />
             </View>
 
             <View style={styles.contentContainer}>
@@ -41,7 +40,7 @@ const ShoeDetails = () => {
                 </View>
 
                 <View style={styles.textContainer}>
-                    <View style={styles.tag}><Text style={styles.fontText}>Quantity: 25</Text></View>
+                    <View style={styles.tag}><Text style={styles.fontText}>Quantity: {shoe.num_of_shoes}</Text></View>
                     <View style={{ flexDirection: 'row' }}>
                         <Feather name="plus-circle" size={26} color="black" style={{ marginRight: 10 }} />
                         <Feather name="minus-circle" size={26} color="black" />

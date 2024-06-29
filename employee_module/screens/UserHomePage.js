@@ -1,5 +1,6 @@
 import { Image, Keyboard, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import { FlatList } from 'react-native'
 import axios from 'axios';
 import { BASE_URL } from '../config';
@@ -25,6 +26,7 @@ const HomeScreen = () => {
         axios.get(`${BASE_URL}/shoes`)
             .then(res => {
                 setShoes(res.data);
+                console.log(res.data);
                 setIsLoading(false);
             })
             .catch(err => {
@@ -34,12 +36,28 @@ const HomeScreen = () => {
 
     const [modalOpen, setModalOpen] = useState(false); // Not Show By Default
 
+    const onSubmit = async (shoeName, shoeColor, numOfShoes, shoeImg = null) => {
+        const formData = new FormData();
+        formData.append('shoe_img', {
+            name: ''
+        })
+        const stallId = shoes[0]['stall_id'];
+
+        console.log(shoeName);
+
+        axios.post(
+            `${BASE_URL}/shoes`,
+            { shoeName, shoeColor, stallId, numOfShoes },
+
+        ).then(res => {
+            console.log(res);
+        }).catch(err => {
+            console.log(err);
+        })
+    }
 
     return (
         !isLoading && (
-
-
-
 
             <View>
                 {/* Modal */}
@@ -53,7 +71,7 @@ const HomeScreen = () => {
                                 onPress={() => setModalOpen(false)}
                             />
 
-                            <ShoeForm />
+                            <ShoeForm onSubmit={onSubmit} />
                         </View>
                     </TouchableWithoutFeedback>
                 </Modal>
@@ -172,6 +190,6 @@ const styles = StyleSheet.create({
     },
     modalClose: {
         marginTop: 25,
-        marginBottom: 150,
+        marginBottom: 100,
     }
 })

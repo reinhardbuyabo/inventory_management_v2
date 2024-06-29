@@ -3,14 +3,7 @@ const { getShoes, addStock, updateStock, getShoeImage } = require("../controller
 const { protect } = require("../middleware/authMiddleware");
 const multer = require("multer");
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, '../employee_module/assets/uploads')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
-});
+const storage = multer.diskStorage({});
 
 // const upload = multer({ storage: storage });
 
