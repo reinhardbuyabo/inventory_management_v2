@@ -19,6 +19,23 @@ const getShoes = async (req, res) => {
         res.status(500).send("Server Error");
     }
 }
+// @desc 1. b Get Single Shoe
+// @route GET /api/shoes/:id
+const getShoeImage = async (req, res) => {
+    const id = req.params.id
+    try {
+        const shoe_img_path_res = await pool.query("SELECT shoe_img FROM shoe WHERE shoe_id=$1", [id]);
+        console.log(shoe_img_path_res);
+        const shoe_img_path = shoe_img_path_res.rows[0];
+        shoe_img_path.spi
+        res.status(200).json({
+            shoe_img_path: shoe_img_path,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
+}
 
 // @desc 2. Add Stock ✅
 // @route POST /api/shoes
@@ -112,94 +129,7 @@ const addStock = async (req, res) => {
         ).catch(err => {
             console.log(err);
         });
-
-        // console.log(existing_shoe.rows);
-        // if (existing_shoe.rowCount > 0) {
-        //     res.status(400).json({
-        //         message: "Cannot Add Shoe: Shoe Already Exists",
-        //     });
-        // }
-
-        // // Image String: ✅
-        // const img_url = `${req.file.destination}/${req.file.filename}`
-        // // console.log(img_url);
-
-        // // (INSERT) INTO shoe TABLE: ✅
-        // let inserted_row;
-        // await pool.query(
-        //     `INSERT INTO shoe(shoe_name, shoe_color, shoe_img) VALUES($1, $2, $3)`,
-        //     [shoe_name, shoe_color, img_url]
-        // ).then(response => {
-        //     console.log(response);
-
-        // }).catch(err => {
-        //     console.log(err);
-        //     res.status(400).json({
-        //         message: `INSERT TO shoe error: ${err.message}`
-        //     });
-        // });
-
-        // // Fetch Newly Inserted Shoe: (SELECT)
-        // const insert_result = await pool.query(`SELECT * FROM shoe WHERE shoe_name='${shoe_name}' AND shoe_color='${shoe_color}'`);
-        // console.log(insert_result);
-
-        // if (insert_result.rows > 0) {
-        //     inserted_row = insert_result.rows[0]; // Assuming it actually exists;
-        //     console.log(inserted_row);
-        // } else {
-        //     res.status(400).json({
-        //         message: "Bad Query Detected",
-        //     })
-        // }
-
-        // console.log("Inserted Shoe minus Number of Shoes: ");
-        // console.log(inserted_row);
-        // if (inserted_row) {
-        //     console.log(`Inserted Row: ${inserted_row}`);
-        //     // all this trouble just to get shoe_id?
-        //     const { shoeId } = inserted_row;
-
-        //     if (!stall_id) {
-        //         res.status(400).json({
-        //             message: "Please Contact Your Admin: Invalid Stall!",
-        //         });
-        //     }
-
-        //     let numOfShoes;
-        //     if (!num_of_shoes) {
-        //         numOfShoes = 0;
-        //     }
-
-        //     pool.query(
-        //         `INSERT INTO shoe_to_stall(shoe_to_stall_id, shoe_id, stall_id, num_of_shoes, created_at, updated_at) VALUES ('${v4()}', $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
-        //         [shoeId, stall_id, num_of_shoes || numOfShoes]
-        //     ).then(res => {
-        //         console.log("New Shoe Added.", res);
-        //     }).catch(err => {
-        //         console.log("Error Inserting Number of Shoes.", err.stack);
-        //     });
-        // }
     }
-
-    // // SHORTFALL
-    // pool.query(`INSERT INTO shoe_to_stall(shoe_to_stall_id, shoe_id, stall_id, num_of_shoes, created_at, updated_at) VALUES ('${v4()}', $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`, [shoe_id, stall_id, num_of_shoes], (err, response) => {
-    //     if (err) {
-    //         console.log(err);
-
-    //         res.status(400).json({
-    //             "message": err.detail
-    //         })
-    //     } else {
-    //         console.log(response);
-    //         // res.json(response.rows[0]);
-
-    //         res.status(200).json({
-    //             "message": `Added ${num_of_shoes} of Shoe Id: ${shoe_id} to Database`
-    //         })
-    //     }
-    // });
-
-
 }
 
 // @desc 2. Update Stock
@@ -230,4 +160,4 @@ const updateStock = (req, res) => {
 }
 
 
-module.exports = { getShoes, addStock, updateStock }
+module.exports = { getShoes, addStock, updateStock, getShoeImage }

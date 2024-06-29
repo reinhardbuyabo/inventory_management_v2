@@ -261,3 +261,16 @@ fs.readFile(tmp_path, function(err, data)
 - However the num_of_shoes attribute is stored in a different table, reason being NORMALIZATION.
 
 - My INSERT query completes before my select query.
+
+### URL/Route Parameters
+- Each Shoe has an id.
+
+```js
+app.get('/api/shoe/:id', (req, res) => {
+  // A Single Document in the Database with that id
+  const id = req.params.id;
+
+  console.log()
+})
+
+```

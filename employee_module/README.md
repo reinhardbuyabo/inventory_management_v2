@@ -169,3 +169,59 @@ const updateSwithcData = value => {
 }
 ```
 
+### AsyncStorage
+- `npm i @react-native-async-storage/async-storage`
+- Usage within AuthContext
+
+### UserHomePage:
+```js
+ <View>
+            <FlatList
+                data={ }
+                renderItem={ }
+                // ListHeaderComponent
+                ListHeaderComponent={
+                    <>
+                        <>
+                            <Header />
+                            <View>
+                                <Text style={styles.headingText}>Match Your Style</Text>
+                                <View style={styles.inputContainer}>
+                                    <Image
+                                        source={require("../assets/search.png")}
+                                        style={styles.searchIcon}
+                                    />
+                                    <TextInput placeholder="Search" style={styles.textInput} />
+                                </View>
+                            </View>
+                        </>
+                        <Tags />
+                    </>
+                }
+            />
+        </View>
+```
+
+### ShoeCard.js
+```js
+const img = item.shoe_img.split('/');
+    img.shift();
+    img.shift();
+    img.unshift('..');
+    const img_str = img.join('/');
+    // const img_str = img
+    console.log(img_str);
+```
+
+- Proposed Solution for frontend:
+```js
+const images = ['image1.png', 'image2.png']; // Array of image paths
+
+return (
+  <View>
+    {images.map((image, index) => (
+      <Image key={index} source={require(`./assets/${image}`)} style={styles.image} />
+    ))}
+  </View>
+);
+```
