@@ -65,15 +65,21 @@ const addStock = async (req, res) => {
                 });
             } else {
                 // Image String: ✅
-                // console.log(req.file);
-                const result = await cloudinary.uploader.upload(req.file.path, {
-                    public_id: `${v4()}_${shoe_name}_${shoe_color}`,
-                    width: 500,
-                    height: 500,
-                    crop: 'fill'
-                });
+                console.log(req);
 
-                const img_url = result.url;
+                let result;
+                if (req.file) {
+                    console.log(req.files);
+                    result = await cloudinary.uploader.upload(req.file.path, {
+                        public_id: `${v4()}_${shoe_name}_${shoe_color}`,
+                        width: 500,
+                        height: 500,
+                        crop: 'fill'
+                    });
+                }
+
+                console.log(`Result: ${result}`);
+                const img_url = result ? result.url : 'https://placehold.co/500x500/jpg';
                 console.log(`After Cloudinary: ${img_url}`);
 
                 // (INSERT) INTO shoe TABLE: ✅

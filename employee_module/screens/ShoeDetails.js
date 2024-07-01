@@ -4,25 +4,13 @@ import React, { useContext, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
 
-const colorsArray = [
-    "#91A1B0",
-    "#B11D1D",
-    "#1F44A3",
-    "#9F632A",
-    "#1D752B",
-    "#000000",
-];
-
-const images = {
-    img: require('../assets/uploads/sixhunfourhun.png'),
-}
-
 const ShoeDetails = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const shoe = route.params.item;
 
     console.log(shoe.shoe_img);
+    const img = shoe.shoe_img ? { uri: shoe.shoe_img } : require('../assets/placeholder_img.png')
     return (
         <View colors={["#FDF0F3", "#FFFBFC"]} style={styles.container}>
             <View style={styles.header}>
@@ -30,7 +18,7 @@ const ShoeDetails = () => {
             </View>
 
             <View style={styles.imageContainer}>
-                <Image source={shoe.shoe_img ? { uri: 'https://placehold.co/600x600/jpg' } : require('../assets/placeholder_img.png')} style={styles.coverImage} />
+                <Image source={shoe.shoe_img ? { uri: shoe.shoe_img } : require('../assets/uploads/placeholder_img.png')} style={styles.coverImage} />
             </View>
 
             <View style={styles.contentContainer}>
@@ -42,8 +30,8 @@ const ShoeDetails = () => {
                 <View style={styles.textContainer}>
                     <View style={styles.tag}><Text style={styles.fontText}>Quantity: {shoe.num_of_shoes}</Text></View>
                     <View style={{ flexDirection: 'row' }}>
-                        <Feather name="plus-circle" size={26} color="black" style={{ marginRight: 10 }} />
-                        <Feather name="minus-circle" size={26} color="black" />
+                        <Feather name="plus-circle" size={30} color="green" style={{ marginRight: 10 }} />
+                        <Feather name="minus-circle" size={30} color="red" />
                     </View>
                 </View>
             </View>
@@ -61,7 +49,7 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     imageContainer: {
-        height: 360,
+        height: 420,
         width: "100%",
         // flexDirection: 'row',
         justifyContent: 'center',

@@ -1,84 +1,35 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+
 import { StackActions } from '@react-navigation/native';
 
-const ImageUpload = props => {
-    const [profileImage, setProfileImage] = useState('');
-    // const [progress, setProgress] = useState(0);
-    // const { token } = props.route.params;
 
-    const openImageLibrary = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+import CustomButton from './CustomButton';
 
-        if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!');
-        }
-
-        if (status === 'granted') {
-            const response = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-            });
-
-            if (!response.cancelled) {
-                setProfileImage(response.uri);
-            }
-        }
-    };
-
-    const uploadProfileImage = async () => {
-        const formData = new FormData();
-        formData.append('profile', {
-            name: new Date() + '_profile',
-            uri: profileImage,
-            type: 'image/jpg',
-        });
-
-        // try {
-        //     const res = await client.post('/upload-profile', formData, {
-        //         headers: {
-        //             Accept: 'application/json',
-        //             'Content-Type': 'multipart/form-data',
-        //             authorization: `JWT ${token}`,
-        //         },
-        //     });
-
-        //     if (res.data.success) {
-        //         props.navigation.dispatch(StackActions.replace('UserProfile'));
-        //     }
-        // } catch (error) {
-        //     console.log(error.message);
-        // }
-    };
-
+const ImageUpload = (props) => {
     return (
         <View style={styles.container}>
             <View>
                 <TouchableOpacity
-                    onPress={openImageLibrary}
+                    // OPEN IMAGE LIBRARY: HOISTED
+                    onPress={props.openImageLibrary}
                     style={styles.uploadBtnContainer}
                 >
-                    {profileImage ? (
+                    {props.shoeImage ? (
                         <Image
-                            source={{ uri: profileImage }}
+                            source={{ uri: props.shoeImage }}
                             style={{ width: '100%', height: '100%' }}
                         />
                     ) : (
-                        <Text style={styles.uploadBtn}>Upload Profile Image</Text>
+                        <Text style={styles.uploadBtn}>Upload Shoe Image</Text>
                     )}
                 </TouchableOpacity>
                 <Text style={styles.skip}>Skip</Text>
-                {profileImage ? (
-                    <Text
-                        onPress={uploadProfileImage}
-                        style={[
-                            styles.skip,
-                            { backgroundColor: 'green', color: 'white', borderRadius: 8 },
-                        ]}
-                    >
-                        Upload
-                    </Text>
+                {props.shoeImage ? (
+                    <>
+                        {/* Custom Button Instead of Upload */}
+                        <CustomButton label={'Submit'} onPress={() => { props.onSubmit(props.shoe_name, props.shoe_color, props.num_of_shoes, props.shoeImage) }} />
+                    </>
                 ) : null}
             </View>
         </View>
@@ -114,8 +65,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textTransform: 'uppercase',
-        letterSpacing: 2,
-        opacity: 0.5,
+        letterSpacing: 1,
+        color: 'white'
     },
 });
 

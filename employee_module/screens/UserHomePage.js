@@ -1,4 +1,4 @@
-import { Image, Keyboard, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import { Alert, Image, Keyboard, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { FlatList } from 'react-native'
@@ -9,11 +9,12 @@ import ShoeCard from '../components/ShoeCard';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import ShoeForm from './ShoeForm';
+import { v6 } from 'uuid';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
     // Context
-    const { logout } = useContext(AuthContext)
+    const { manager, userToken, logout } = useContext(AuthContext);
 
     const [isLoading, setIsLoading] = useState(true);
     const [shoes, setShoes] = useState([]);
@@ -21,8 +22,8 @@ const HomeScreen = () => {
     const handleProductDetails = (item) => {
         navigation.navigate("Shoe_Details", { item });
     }
-    useEffect(() => {
-        setIsLoading(true);
+
+    const fetchShoes = async () => {
         axios.get(`${BASE_URL}/shoes`)
             .then(res => {
                 setShoes(res.data);
@@ -32,28 +33,74 @@ const HomeScreen = () => {
             .catch(err => {
                 console.log(err);
             })
+    }
+
+    useEffect(() => {
+        setIsLoading(true);
+        fetchShoes();
     }, [])
 
     const [modalOpen, setModalOpen] = useState(false); // Not Show By Default
 
-    const onSubmit = async (shoeName, shoeColor, numOfShoes, shoeImg = null) => {
-        const formData = new FormData();
-        formData.append('shoe_img', {
-            name: ''
-        })
+    // hoisted: shoeImg holds the uri
+    const [shoeImg, setShoeImg] = useState(null);
+
+    // hoisted
+    const openImageLibrary = async () => {
+        try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (status !== 'granted') {
+                Alert.alert('Sorry, we need camera roll permissions to make this work!');
+            }
+
+            if (status === 'granted') {
+                const response = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                });
+
+                console.log(response.assets[0]);
+                if (!response.canceled) {
+                    // console.log(response.assets)
+                    setShoeImg(response.assets[0].uri);
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const onSubmit = async (shoeName, shoeColor, numOfShoes, shoe_uri) => {
+        console.log(`From UserHomePage: ${shoe_uri}`);
         const stallId = shoes[0]['stall_id'];
 
-        console.log(shoeName);
+        const formData = new FormData();
+        formData.append('shoe_name', shoeName);
+        formData.append('shoe_color', shoeColor);
+        formData.append('num_of_shoes', numOfShoes);
+        formData.append('stall_id', stallId);
+        formData.append('file', {
+            name: `${shoeName}_${shoeColor}_${new Date()}`,
+            uri: shoe_uri,
+            type: 'image/jpg',
+        });
 
-        axios.post(
-            `${BASE_URL}/shoes`,
-            { shoeName, shoeColor, stallId, numOfShoes },
+        try {
+            const response = await axios.post(`${BASE_URL}/shoes`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${userToken}`,
+                },
+            });
 
-        ).then(res => {
-            console.log(res);
-        }).catch(err => {
-            console.log(err);
-        })
+            console.log(formData);
+            Alert.alert("Shoe Added ✅");
+            fetchShoes();
+            setModalOpen(false);
+        } catch (err) {
+            console.log(err.message);
+        }
     }
 
     return (
@@ -71,13 +118,13 @@ const HomeScreen = () => {
                                 onPress={() => setModalOpen(false)}
                             />
 
-                            <ShoeForm onSubmit={onSubmit} />
+                            <ShoeForm onSubmit={onSubmit} shoeImage={shoeImg} setShoeImg={setShoeImg} openImageLibrary={openImageLibrary} />
                         </View>
                     </TouchableWithoutFeedback>
                 </Modal>
                 {/* Main */}
                 <View style={styles.v_wel}>
-                    <Text style={styles.welcome}>Welcome Employee</Text>
+                    <Text style={styles.welcome}>Welcome {manager}</Text>
                 </View>
 
                 <FlatList
@@ -109,6 +156,7 @@ const HomeScreen = () => {
                                             size={30}
                                             style={styles.modalToggle}
                                             onPress={() => setModalOpen(true)}
+                                            color='coral'
                                         />
                                     </View>
                                 </View>
@@ -136,8 +184,9 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     headingText: {
-        fontSize: 20,
-        color: '#000000',
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'coral',
         marginVertical: 20,
         textAlign: 'center'
     },
@@ -167,7 +216,7 @@ const styles = StyleSheet.create({
     welcome: {
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 25,
     },
     top_search_modal: {
         flexDirection: 'row',

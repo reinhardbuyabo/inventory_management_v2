@@ -18,16 +18,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { AntDesign, Zocial, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
-
-import CustomButton from '../components/CustomButton';
 import ImageUpload from '../components/ImageUpload';
 
-const ShoeForm = ({ navigation, onSubmit }) => {
+const ShoeForm = ({ navigation, onSubmit, shoeImage, openImageLibrary }) => {
     const [shoe_name, setShoeName] = useState(null);
     const [shoe_color, setShoeColor] = useState(null);
     const [num_of_shoes, setNumOfShoes] = useState(null);
-    const [shoe_img, setShoeImg] = useState(null);
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
@@ -56,7 +52,7 @@ const ShoeForm = ({ navigation, onSubmit }) => {
                             style={{ marginRight: 5 }}
                         />
                     }
-                    value={shoe_name}
+                    value={shoe_name} // first state
                     onChangeText={text => setShoeName(text)}
                 />
 
@@ -71,7 +67,7 @@ const ShoeForm = ({ navigation, onSubmit }) => {
                         />
                     }
                     keyboardType="default"
-                    value={shoe_color}
+                    value={shoe_color} // second state
                     onChangeText={text => setShoeColor(text)}
                 />
 
@@ -86,29 +82,12 @@ const ShoeForm = ({ navigation, onSubmit }) => {
                     }
                     inputType="number"
                     keyboardType="number-pad"
-                    value={num_of_shoes}
+                    value={num_of_shoes} // third state
                     onChangeText={text => setNumOfShoes(text)}
                 />
 
-                {/* Put Shoe Image Here */}
-                {/* <InputField
-                    label={'Shoe Image'}
-                    icon={
-                        <FontAwesome5
-                            name="file-image"
-                            size={20}
-                            color="coral"
-                            style={{ marginRight: 5 }}
-                        />
-                    }
-                    inputType="text"
-                    value={shoe_img}
-                    onChangeText={text => setShoeImg(text)}
-                /> */}
-
-                <ImageUpload />
-
-                <CustomButton label={'Submit'} onPress={() => { onSubmit(shoe_name, shoe_color, num_of_shoes, shoe_img) }} />
+                {/* FOURTH AND FINAL STATE */}
+                <ImageUpload shoeImage={shoeImage} openImageLibrary={openImageLibrary} shoe_name={shoe_name} shoe_color={shoe_color} num_of_shoes={num_of_shoes} onSubmit={onSubmit} />
 
             </ScrollView>
         </SafeAreaView>

@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
     // const [test, setTest] = useState('Test Value');
     const [isLoading, setIsLoading] = useState(true);
     const [userToken, setUserToken] = useState(null);
+    const [manager, setManager] = useState(null);
 
     const register = (name, email, password) => {
         setIsLoading(true);
@@ -38,8 +39,9 @@ export const AuthProvider = ({ children }) => {
         }).then(res => {
             // console.log(res.data);
             // console.log("From then! NO Error")
-            const { token } = res.data;
-            console.log(token);
+            const { name, token } = res.data;
+            setManager(name);
+            console.log(res.data);
             // UPDATE
             setUserToken(token); // example string ... 
             AsyncStorage.setItem('userToken', token);
@@ -70,7 +72,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         //  should pass value
-        <AuthContext.Provider value={{ register, login, logout, isLoading, isLoggedIn, userToken }}>
+        <AuthContext.Provider value={{ register, login, logout, isLoading, isLoggedIn, userToken, manager }}>
             {children}
         </AuthContext.Provider>
     );
