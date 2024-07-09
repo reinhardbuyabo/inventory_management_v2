@@ -15,9 +15,8 @@ export default function Header({ title, navigation }) {
             <MaterialIcons name='menu' size={28} onPress={openMenu} style={styles.icon} />
             <View style={styles.headerTitle}>
                 {/* Image Added Here */}
-                <MaterialCommunityIcons name="shoe-sneaker" size={26} color="black" />
-                {/* <Image source={require('../assets/heart_logo.png')} style={styles.headerImage} /> */}
                 <Text style={styles.headerText}>{title}</Text>
+                <MaterialCommunityIcons name="shoe-sneaker" size={26} color="coral" />
             </View>
         </ImageBackground>
     );
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
         height: '100%',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
     },
     headerText: {
         fontWeight: 'bold',
@@ -38,11 +37,12 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
     },
     icon: {
-        position: 'absolute',
-        left: 16,
+        // position: 'absolute',
+        // left: 16,
     },
     headerTitle: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        // justifyContent: 'space-between'
     },
     headerImage: {
         width: 26,

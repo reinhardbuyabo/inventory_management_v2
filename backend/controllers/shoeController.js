@@ -9,30 +9,73 @@ const cloudinary = require("../config/cloudinary_config");
 // @route GET /api/shoes
 // @access Public
 const getShoes = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const filter = req.query.filter ? JSON.parse(req.query.filter) : null;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const results = {};
 
     try {
-        // pool.query returns a promise
-        const result = await pool.query("SELECT * FROM shoe LEFT JOIN shoe_to_stall ON shoe.shoe_id=shoe_to_stall.shoe_id LEFT JOIN stall ON stall.stall_id=shoe_to_stall.stall_id");
-        console.log(result);
+        let query = `
+            SELECT * FROM shoe
+            LEFT JOIN shoe_to_stall ON shoe.shoe_id = shoe_to_stall.shoe_id
+            LEFT JOIN stall ON stall.stall_id = shoe_to_stall.stall_id
+        `;
+
+        const queryParams = [];
+        if (filter && filter.id) {
+            query += ` WHERE shoe.shoe_id = ANY($1::int[])`;
+            queryParams.push(filter.id);
+        }
+
+        const result = await pool.query(query, queryParams);
         const shoes = result.rows;
-        res.status(200).json(shoes);
+
+        // If pagination parameters are not present, return the full list of shoes
+        if (!req.query.page && !req.query.limit) {
+            return res.status(200).json(shoes);
+        }
+
+        if (endIndex < shoes.length) {
+            results.next = {
+                page: page + 1,
+                limit: limit
+            };
+        }
+
+        if (startIndex > 0) {
+            results.previous = {
+                page: page - 1,
+                limit: limit
+            };
+        }
+
+        results.results = shoes.slice(startIndex, endIndex);
+        results.totalCount = shoes.length;
+
+        res.status(200).json(results);
     } catch (err) {
         console.log(err);
         res.status(500).send("Server Error");
     }
-}
+};
+
 // @desc 1. b Get Single Shoe
 // @route GET /api/shoes/:id
-const getShoeImage = async (req, res) => {
+// @access Private
+const getShoe = async (req, res) => {
     const id = req.params.id
     try {
-        const shoe_img_path_res = await pool.query("SELECT shoe_img FROM shoe WHERE shoe_id=$1", [id]);
-        console.log(shoe_img_path_res);
-        const shoe_img_path = shoe_img_path_res.rows[0];
+        const shoe_res = await pool.query(`SELECT * FROM shoe
+            LEFT JOIN shoe_to_stall ON shoe.shoe_id = shoe_to_stall.shoe_id  
+            LEFT JOIN stall ON stall.stall_id = shoe_to_stall.stall_id
+            WHERE shoe.shoe_id=$1`, [id]);
+        const shoe = shoe_res.rows[0];
 
-        res.status(200).json({
-            shoe_img_path: shoe_img_path,
-        });
+        res.status(200).json(shoe);
     } catch (err) {
         console.log(err);
         res.status(500).send("Server Error");
@@ -149,7 +192,7 @@ const addStock = async (req, res) => {
 }
 
 // @desc 2. Update Stock
-// @route POST /api/shoes
+// @route put /api/shoes
 // @access Private - Manager
 const updateStock = (req, res) => {
     const { shoe_id, stall_id, num_of_shoes } = req.body;
@@ -175,5 +218,32 @@ const updateStock = (req, res) => {
         });
 }
 
+const deleteShoe = async (req, res) => {
+    try {
+        const result = await pool.query(
+            `DELETE FROM shoe WHERE shoe_id=${req.params.id}`
+        );
 
-module.exports = { getShoes, addStock, updateStock, getShoeImage }
+        if (result.rowCount >= 1) {
+            console.log("Delete Successful");
+
+            const response = await pool.query(`SELECT * FROM shoe
+            LEFT JOIN shoe_to_stall ON shoe.shoe_id = shoe_to_stall.shoe_id
+            LEFT JOIN stall ON stall.stall_id = shoe_to_stall.stall_id`);
+
+            console.log(response.rows);
+            res.status(200).json(response.rows)
+        } else {
+            res.status(400).json({
+                message: "Already Deleted",
+            })
+        }
+    } catch (err) {
+        res.status(400).json({
+            message: err.message,
+        })
+    }
+}
+
+
+module.exports = { getShoes, addStock, updateStock, getShoe, deleteShoe }

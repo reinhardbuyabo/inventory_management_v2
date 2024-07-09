@@ -1,24 +1,71 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useContext, useState } from "react";
-// import Header from "../components/Header";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { Image, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Modal, TextInput, Button, Keyboard } from "react-native";
+import React, { useCallback, useContext, useState } from "react";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import InputField from "../components/InputField";
+import CustomButton from "../components/CustomButton";
+import axios from "axios";
+import { BASE_URL } from "../config";
+import { AuthContext } from "../context/AuthContext";
+
 
 const ShoeDetails = () => {
     const route = useRoute();
-    const navigation = useNavigation();
+    const { userToken } = useContext(AuthContext);
     const shoe = route.params.item;
 
-    console.log(shoe.shoe_img);
-    const img = shoe.shoe_img ? { uri: shoe.shoe_img } : require('../assets/placeholder_img.png')
+    const [numOfShoes, setNumOfShoes] = useState(shoe.num_of_shoes);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [inputValue, setInputValue] = useState('');
+
+    const increment = (value = 1) => setNumOfShoes(numOfShoes + value);
+    const decrement = (value = 1) => setNumOfShoes(Math.max(0, numOfShoes - value)); // Ensure quantity doesn't go below 0
+
+    const handleSetQuantity = () => {
+        const value = parseInt(inputValue, 10);
+        if (!isNaN(value)) {
+            console.log(route.params);
+            setNumOfShoes(value);
+            setModalVisible(false);
+        }
+    };
+
+    const updateDatabase = async () => {
+        try {
+            // console.log(shoe);
+            // console.log(numOfShoes);
+            await axios.put(`${BASE_URL}/shoes/`, { shoe_id: shoe.shoe_id, stall_id: shoe.stall_id, num_of_shoes: numOfShoes },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userToken}`
+                    }
+                }
+            );
+            // console.log('Database updated successfully');
+        } catch (error) {
+            console.error('Error updating database:', error);
+        }
+    };
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                updateDatabase();
+                // fetchShoes();
+            };
+        }, [numOfShoes])
+    );
+
+    const img = shoe.shoe_img ? { uri: shoe.shoe_img } : require('../assets/placeholder_img.png');
+
     return (
-        <View colors={["#FDF0F3", "#FFFBFC"]} style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.header}>
                 {/* <Header /> */}
             </View>
 
             <View style={styles.imageContainer}>
-                <Image source={shoe.shoe_img ? { uri: shoe.shoe_img } : require('../assets/uploads/placeholder_img.png')} style={styles.coverImage} />
+                <Image source={img} style={styles.coverImage} />
             </View>
 
             <View style={styles.contentContainer}>
@@ -28,13 +75,67 @@ const ShoeDetails = () => {
                 </View>
 
                 <View style={styles.textContainer}>
-                    <View style={styles.tag}><Text style={styles.fontText}>Quantity: {shoe.num_of_shoes}</Text></View>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <View style={styles.tag}><Text style={styles.fontText}>Quantity: {numOfShoes}</Text></View>
+                    </TouchableOpacity>
                     <View style={{ flexDirection: 'row' }}>
-                        <Feather name="plus-circle" size={30} color="green" style={{ marginRight: 10 }} />
-                        <Feather name="minus-circle" size={30} color="red" />
+                        <TouchableOpacity
+                            onPress={() => increment()}
+                            onLongPress={() => setModalVisible(true)}
+                        >
+                            <Feather name="plus-circle" size={30} color="green" style={{ marginRight: 10 }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => decrement()}
+                            onLongPress={() => setModalVisible(true)}
+                        >
+                            <Feather name="minus-circle" size={30} color="red" />
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
+
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View>
+
+                    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                        <View style={styles.modalContent}>
+                            <MaterialIcons
+                                name='close'
+                                size={30}
+                                style={{ ...styles.modalToggle, ...styles.modalClose }}
+                                onPress={() => setModalVisible(false)}
+                            />
+
+                            <View>
+                                <InputField
+                                    label={`${shoe.num_of_shoes}`}
+                                    icon={
+                                        <MaterialIcons
+                                            name="numbers"
+                                            size={24}
+                                            color="coral"
+                                        />
+                                    }
+                                    inputType="number"
+                                    keyboardType="number-pad"
+                                    value={inputValue} // third state
+                                    onChangeText={text => setInputValue(text)}
+                                />
+                                <CustomButton label={'Update Quantity'} plache onPress={handleSetQuantity} />
+                            </View>
+
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -142,5 +243,23 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         padding: 5,
         borderRadius: 10,
+    },
+    modalContent: {
+        // flex: 1,
+        padding: 50,
+    },
+    modalToggle: {
+        borderWidth: 1,
+        borderColor: '#f2f2f2',
+        borderRadius: 10,
+        alignSelf: 'center', // brings it to the center
+        // backgroundColor: 'coral'
+        shadowOffset: { width: 1, height: 1 },
+        shadowColor: 'coral',
+        shadowOpacity: 0.3
+    },
+    modalClose: {
+        marginTop: 25,
+        marginBottom: 100,
     }
 });

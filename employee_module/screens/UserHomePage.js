@@ -1,15 +1,15 @@
-import { Alert, Image, Keyboard, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react';
+import { Alert, Image, Keyboard, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { FlatList } from 'react-native'
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext'
 import ShoeCard from '../components/ShoeCard';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MaterialIcons } from '@expo/vector-icons';
 import ShoeForm from './ShoeForm';
-import { v6 } from 'uuid';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -18,6 +18,23 @@ const HomeScreen = () => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [shoes, setShoes] = useState([]);
+    const [search, setSearch] = useState('');
+    const [filteredData, setFilteredData] = useState([]);
+
+    const handleSearch = (input) => {
+        setSearch(input);
+
+        if (input) {
+            const newData = shoes.filter(item => {
+                const itemData = item.shoe_name.toLowerCase();
+                const inputData = input.toLowerCase();
+                return itemData.indexOf(inputData) > -1;
+            });
+            setFilteredData(newData);
+        } else {
+            setFilteredData(shoes);
+        }
+    }
 
     const handleProductDetails = (item) => {
         navigation.navigate("Shoe_Details", { item });
@@ -27,7 +44,7 @@ const HomeScreen = () => {
         axios.get(`${BASE_URL}/shoes`)
             .then(res => {
                 setShoes(res.data);
-                console.log(res.data);
+                setFilteredData(res.data);
                 setIsLoading(false);
             })
             .catch(err => {
@@ -35,10 +52,12 @@ const HomeScreen = () => {
             })
     }
 
-    useEffect(() => {
-        setIsLoading(true);
-        fetchShoes();
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            setIsLoading(true);
+            fetchShoes();
+        }, [])
+    );
 
     const [modalOpen, setModalOpen] = useState(false); // Not Show By Default
 
@@ -94,7 +113,7 @@ const HomeScreen = () => {
                 },
             });
 
-            console.log(formData);
+            console.log(response.data);
             Alert.alert("Shoe Added ✅");
             fetchShoes();
             setModalOpen(false);
@@ -105,68 +124,72 @@ const HomeScreen = () => {
 
     return (
         !isLoading && (
+            <SafeAreaView>
+                <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                    <View>
+                        {/* Modal */}
+                        <Modal visible={modalOpen}>
+                            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                                <View style={styles.modalContent}>
+                                    <MaterialIcons
+                                        name='close'
+                                        size={30}
+                                        style={{ ...styles.modalToggle, ...styles.modalClose }}
+                                        onPress={() => setModalOpen(false)}
+                                    />
 
-            <View>
-                {/* Modal */}
-                <Modal visible={modalOpen}>
-                    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                        <View style={styles.modalContent}>
-                            <MaterialIcons
-                                name='close'
-                                size={30}
-                                style={{ ...styles.modalToggle, ...styles.modalClose }}
-                                onPress={() => setModalOpen(false)}
-                            />
-
-                            <ShoeForm onSubmit={onSubmit} shoeImage={shoeImg} setShoeImg={setShoeImg} openImageLibrary={openImageLibrary} />
-                        </View>
-                    </TouchableWithoutFeedback>
-                </Modal>
-                {/* Main */}
-                <View style={styles.v_wel}>
-                    <Text style={styles.welcome}>Welcome {manager}</Text>
-                </View>
-
-                <FlatList
-                    data={shoes}
-                    renderItem={({ item }) => (
-                        <ShoeCard
-                            item={item}
-                            handleProductClick={handleProductDetails}
-                        />
-                    )}
-                    ListHeaderComponent={
-                        <>
-                            <>
-                                {/* <Header /> */}
-                                <View style={styles.listHeaderComp}>
-                                    <Text style={styles.headingText}>Track Shoes</Text>
-                                    <View style={styles.top_search_modal}>
-                                        <View style={styles.inputContainer}>
-                                            {/* Search Icon */}
-                                            <Image
-                                                source={require("../assets/search.png")}
-                                                style={styles.searchIcon}
-                                            />
-                                            <TextInput placeholder="Search" style={styles.textInput} />
-                                        </View>
-
-                                        <MaterialIcons
-                                            name='add'
-                                            size={30}
-                                            style={styles.modalToggle}
-                                            onPress={() => setModalOpen(true)}
-                                            color='coral'
-                                        />
-                                    </View>
+                                    <ShoeForm onSubmit={onSubmit} shoeImage={shoeImg} setShoeImg={setShoeImg} openImageLibrary={openImageLibrary} />
                                 </View>
-                            </>
-                            {/* <Tags /> */}
-                        </>
-                    }
-                // numColumns={2}
-                />
-            </View >
+                            </TouchableWithoutFeedback>
+                        </Modal>
+                        {/* Main */}
+                        <View style={styles.v_wel}>
+                            <Text style={styles.welcome}>Welcome {manager}</Text>
+                        </View>
+
+                        <View><Text style={styles.headingText}>Track Shoes</Text></View>
+                        <FlatList
+                            data={filteredData}
+                            renderItem={({ item }) => (
+                                <ShoeCard
+                                    item={item}
+                                    handleProductClick={handleProductDetails}
+                                />
+                            )}
+                            ListHeaderComponent={
+                                <>
+                                    <>
+                                        {/* <Header /> */}
+                                        <View style={styles.listHeaderComp}>
+
+                                            <View style={styles.top_search_modal}>
+                                                <View style={styles.inputContainer}>
+                                                    {/* Search Icon */}
+                                                    <Image
+                                                        source={require("../assets/search.png")}
+                                                        style={styles.searchIcon}
+                                                    />
+                                                    <TextInput placeholder="Search" style={styles.textInput} value={search} onChangeText={(input) => handleSearch(input)} autoCapitalize='none' autoCorrect={false} />
+                                                </View>
+
+                                                <MaterialIcons
+                                                    name='add'
+                                                    size={30}
+                                                    style={styles.modalToggle}
+                                                    onPress={() => setModalOpen(true)}
+                                                    color='coral'
+                                                />
+                                            </View>
+                                        </View>
+                                    </>
+                                    {/* <Tags /> */}
+                                </>
+                            }
+                        // numColumns={2}
+                        />
+                    </View >
+                </TouchableWithoutFeedback>
+            </SafeAreaView>
         )
     )
 }

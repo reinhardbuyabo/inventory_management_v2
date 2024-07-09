@@ -5,7 +5,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "mobile": "npm run start --prefix ../employee_module",
-    "spin-up": "concurrently \"npm run start\" \"npm run mobile\""
+    "spin-up": "concurrently \"npm run start\" \"npm run mobile\"",
+    "test": "mocha"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +35,8 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
-    "@types/pg": "^8.11.6"
+    "@types/pg": "^8.11.6",
+    "chai": "^5.1.1",
+    "mocha": "^10.6.0"
   }
 }

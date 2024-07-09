@@ -1,12 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { BASE_URL } from "../config";
-import axios from "axios";
-// import { fonts } from "../utils/fonts";
 
 const ShoeCard = ({ item, handleProductClick }) => {
-
-
     return (
         <TouchableOpacity
             style={styles.container}

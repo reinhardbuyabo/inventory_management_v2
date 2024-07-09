@@ -121,4 +121,46 @@ const getMe = async (req, res) => {
     }
 }
 
-module.exports = { registerEmployee, loginEmployee, getMe }
+const getEmployees = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
+    const sort = req.query.sort ? JSON.parse(req.query.sort) : { field: 'emp_id', order: 'ASC' };
+
+    const startIndex = (page - 1) * limit;
+
+    try {
+        // Construct the base query
+        let query = `SELECT * FROM employee`;
+        const queryParams = [];
+
+        // Apply filtering
+        if (filter && Object.keys(filter).length > 0) {
+            const filterConditions = [];
+            Object.keys(filter).forEach((key, index) => {
+                filterConditions.push(`${key} = $${index + 1}`);
+                queryParams.push(filter[key]);
+            });
+            query += ` WHERE ` + filterConditions.join(' AND ');
+        }
+
+        // Apply sorting
+        query += ` ORDER BY ${sort.field} ${sort.order}`;
+
+        // Apply pagination
+        query += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+        queryParams.push(limit, startIndex);
+
+        // Execute the query
+        const result = await pool.query(query, queryParams);
+
+        // Respond with the data
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+module.exports = { registerEmployee, loginEmployee, getMe, getEmployees }
