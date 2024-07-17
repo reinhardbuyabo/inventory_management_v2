@@ -7,7 +7,7 @@ import { BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext'
 import ShoeCard from '../components/ShoeCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+// import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MaterialIcons } from '@expo/vector-icons';
 import ShoeForm from './ShoeForm';
 
@@ -113,12 +113,13 @@ const HomeScreen = () => {
                 },
             });
 
-            console.log(response.data);
+            console.log(`From line 116 userhomepage: ${response.data}`);
             Alert.alert("Shoe Added ✅");
             fetchShoes();
             setModalOpen(false);
         } catch (err) {
             console.log(err.message);
+            Alert.alert("Error adding shoe ❌. Shoe Already Exists");
         }
     }
 
@@ -154,8 +155,10 @@ const HomeScreen = () => {
                                 <ShoeCard
                                     item={item}
                                     handleProductClick={handleProductDetails}
+                                    fetchShoes={fetchShoes}
                                 />
                             )}
+                            scrollEnabled={true}
                             ListHeaderComponent={
                                 <>
                                     <>

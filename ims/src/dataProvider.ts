@@ -1,9 +1,9 @@
 import { DataProvider, fetchUtils, RaRecord, Identifier } from 'react-admin';
 import axios from 'axios';
 
-const apiUrl = 'http://10.52.38.215:3001/api'; // Replace with your API URL
+const apiUrl = 'http://localhost:3001/api'; // Replace with your API URL
 
-const httpClient = fetchUtils.fetchJson;
+// const httpClient = fetchUtils.fetchJson;
 
 export const dataProvider: DataProvider = {
     getList: async (resource, params) => {

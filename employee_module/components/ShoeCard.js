@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 
-const ShoeCard = ({ item, handleProductClick }) => {
+const ShoeCard = ({ item, handleProductClick, fetchShoes }) => {
     return (
         <TouchableOpacity
             style={styles.container}

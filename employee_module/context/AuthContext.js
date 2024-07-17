@@ -24,6 +24,8 @@ export const AuthProvider = ({ children }) => {
             setUserToken(token);
             AsyncStorage.setItem('userToken', token);
             setIsLoading(false);
+
+            navigator.navigate('Login');
         }).catch(err => console.log(err));
     }
 

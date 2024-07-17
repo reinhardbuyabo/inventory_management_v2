@@ -14,6 +14,7 @@ import IceSkatingIcon from '@mui/icons-material/IceSkating';
 import BadgeIcon from '@mui/icons-material/Badge';
 import { ManagerList } from "./components/ManagerLList";
 import { ShoeEdit } from "./components/ShoeEdit";
+import { ShoeShow } from "./components/ShoeShow";
 
 export const App = () => (
   <Admin
@@ -26,7 +27,8 @@ export const App = () => (
       icon={IceSkatingIcon}
       list={ShoeList}
       edit={ShoeEdit}
-      show={ShowGuesser}
+      show={ShoeShow}
+      // show={ShowGuesser}
       
     />
     <Resource

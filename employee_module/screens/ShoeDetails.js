@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Modal, TextInput, Button, Keyboard } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Modal, TextInput, Button, Keyboard, Alert } from "react-native";
 import React, { useCallback, useContext, useState } from "react";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
@@ -12,8 +12,9 @@ import { AuthContext } from "../context/AuthContext";
 
 const ShoeDetails = () => {
     const route = useRoute();
-    const { userToken } = useContext(AuthContext);
+    const { userToken, fetchShoes } = useContext(AuthContext);
     const shoe = route.params.item;
+    const navigation = useNavigation();
 
     const [numOfShoes, setNumOfShoes] = useState(shoe.num_of_shoes);
     const [modalVisible, setModalVisible] = useState(false);
@@ -35,7 +36,7 @@ const ShoeDetails = () => {
         try {
             // console.log(shoe);
             // console.log(numOfShoes);
-            await axios.put(`${BASE_URL}/shoes/`, { shoe_id: shoe.shoe_id, stall_id: shoe.stall_id, num_of_shoes: numOfShoes },
+            const res = await axios.put(`${BASE_URL}/shoes/`, { shoe_id: shoe.shoe_id, stall_id: shoe.stall_id, num_of_shoes: numOfShoes },
                 {
                     headers: {
                         Authorization: `Bearer ${userToken}`
@@ -43,6 +44,9 @@ const ShoeDetails = () => {
                 }
             );
             // console.log('Database updated successfully');
+            if (res) {
+                console.log(res.data);
+            }
         } catch (error) {
             console.error('Error updating database:', error);
         }
@@ -51,9 +55,9 @@ const ShoeDetails = () => {
         useCallback(() => {
             return () => {
                 updateDatabase();
-                // fetchShoes();
+                fetchShoes();
             };
-        }, [numOfShoes])
+        }, [])
     );
 
     const img = shoe.shoe_img ? { uri: shoe.shoe_img } : require('../assets/placeholder_img.png');
