@@ -65,7 +65,8 @@ const ShoeDetails = () => {
             </View>
 
             <View style={styles.imageContainer}>
-                <Image source={img} style={styles.coverImage} />
+                {/* PROBLEM WITH DYNAMIC RENDERING */}
+                <Image source={require('../assets/uploads/placeholder_img.png')} style={styles.coverImage} />
             </View>
 
             <View style={styles.contentContainer}>
@@ -263,3 +264,4 @@ const styles = StyleSheet.create({
         marginBottom: 100,
     }
 });
+``

@@ -15,7 +15,7 @@ const AppStack = () => {
                     return { headerTitle: () => <Header navigation={navigation} title="ShoesHere" /> }
                 }
             } />
-            <Stack.Screen name="Shoe_Details" component={ShoeDetails} options={{ headerTitle: () => <Header title="Shoe Details" /> }} />
+            <Stack.Screen name="Shoe Details" component={ShoeDetails} />
             {/* <Stack.Screen name="AddStock" component={AddStockPage} /> */}
             {/* <Stack.Screen name="EditStock" component={EditStockPage} /> */}
         </Stack.Navigator>

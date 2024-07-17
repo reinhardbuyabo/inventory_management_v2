@@ -37,7 +37,7 @@ const HomeScreen = () => {
     }
 
     const handleProductDetails = (item) => {
-        navigation.navigate("Shoe_Details", { item });
+        navigation.navigate("Shoe Details", { item });
     }
 
     const fetchShoes = async () => {

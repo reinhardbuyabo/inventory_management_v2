@@ -36,7 +36,9 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use(errorHandler)
 
 // Server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log("Listening on Port " + process.env.PORT);
 });
+
+module.exports = server
 
