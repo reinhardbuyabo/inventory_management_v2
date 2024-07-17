@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, Button } from 'react-native'
+import { View, Text, ActivityIndicator, Button, TouchableOpacity } from 'react-native'
 import React, { useContext } from 'react'
 
 import AuthStack from './AuthStack'
@@ -30,7 +30,28 @@ export default function AppNav() {
                 <RootDrawerNavigator.Screen name='Logout' options={{ title: 'Logout', headerShown: false }}>
                     {() => (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <Button title="Logout" onPress={() => logout()} />
+                            <TouchableOpacity
+                                onPress={() => logout()}
+                                style={{
+                                    height: 125,
+                                    width: 125,
+                                    borderRadius: 125 / 2,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    borderStyle: 'dashed',
+                                    borderColor: 'coral',
+                                    borderWidth: 1,
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                <Text style={{
+                                    textAlign: 'center',
+                                    fontSize: 16,
+                                    opacity: 0.3,
+                                    fontWeight: 'bold',
+                                }}>LOGOUT</Text>
+                            </TouchableOpacity>
+
                         </View>
                     )}
                 </RootDrawerNavigator.Screen>
