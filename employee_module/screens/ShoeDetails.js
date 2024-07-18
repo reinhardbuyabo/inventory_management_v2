@@ -55,7 +55,7 @@ const ShoeDetails = () => {
         useCallback(() => {
             return () => {
                 updateDatabase();
-                fetchShoes();
+                // fetchShoes();
             };
         }, [])
     );
