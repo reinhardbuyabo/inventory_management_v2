@@ -13,4 +13,4 @@ That said, this project is important in the sense that it adapts to the processe
 ## Feedback
 - [ ] 1. Integrate the Point of Sale System, i.e, emulate/simulate buying and selling to reduce stock
 - [ ] 2. Clarify User Roles: Admin, Manager, and Employee roles
-- [ ] 3. An admin/business owner might not be involved in the day-to-day operations. So how can the process of ordering and requesting for stock be delegated, say to the manager, in such a way that there is maximum efficiency in terms of requesting for stock.
+- [ ] 3. An admin/business owner might not be involved in the day-to-day operations. So how can the process of ordering and requesting for stock be delegated, say to the manager, in such a way that there is maximum efficiency in terms of requesting for stock?
