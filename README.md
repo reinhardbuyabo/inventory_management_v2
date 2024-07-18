@@ -9,3 +9,7 @@ That said, this project is important in the sense that it adapts to the processe
 
 ## Conceptual Framework
 ![Conceptual Framework](<Conceptual Framework.png>)
+
+## Feedback
+- [ ] 1. Integrate the Point of Sale System, i.e, emulate/simulate buying and selling
+- [ ] 2. Clarify User Roles: Admin, Manager, and Employee roles
